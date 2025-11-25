@@ -1,150 +1,133 @@
-Brute Force Protection Lab (Flask)
+🛡️ Brute Force Protection Lab (Flask)
 
-This project is a hands-on cybersecurity lab demonstrating how to protect a login endpoint from brute-force attacks using:
+This project demonstrates how to protect a login system from brute-force attacks using IP throttling, user account locking, backoff delays, and detailed logging.
+It is designed for cybersecurity students and developers who want to understand authentication security and defensive programming.
 
-IP-Based Throttling
+Features
+🔒 1. IP-Based Rate Limiting
 
-User Account Locking
+Tracks failed login attempts per IP
 
-Backoff Timers
+Adds exponential backoff delays
 
-Logging of failed & successful attempts
+Returns 429 Too Many Requests when throttled
 
-Status endpoint to observe throttling behavior
+👤 2. User Account Locking
 
-It is designed for cybersecurity students, SOC analysts, and developers who want to understand web authentication hardening.
+Locks user accounts after too many failed attempts
 
- Features
- 1. IP-Based Rate Limiting
+Tracks failed logins per username
 
-Blocks repeated login attempts from the same IP after multiple failures.
+Returns 423 Locked when account is locked
+3. Login Attempt Logging
 
-Tracks failed attempts per IP
+Logs successes, failures, throttled requests
 
-Applies backoff delays
+Useful for security monitoring and SIEM labs
 
-Returns HTTP 429 Too Many Requests
+📊 4. Internal Status Endpoint
 
- 2. User Account Locking
+/status returns a live snapshot of IP and user lockout state.
+Helpful for testing and observing brute-force mitigation.
 
-Locks a user account for a specific time after several failed attempts.
-
-Tracks failed attempts per username
-
-Locks account temporarily
-
-Returns HTTP 423 Locked
-
- 3. Logging
-
-Logs:
-
-Successful logins
-
-Failed logins
-
-Throttled IPs
-
-Locked accounts
-
-Useful for cybersecurity monitoring.
-
-4. Status Endpoint
-
-/status
-
-Shows:
-
-    failed_by_ip_sample
-
-    failed_by_user_sample
-
-Useful for testing and debugging.
 Project Structure
-
 bruteforce_lab/
-│── app.py                 # Flask API with brute-force protection
-│── requirements.txt        # Python dependencies
-│── README.md               # Project documentation
-└── venv/                   # (optional) Python virtual environment
+│── app.py                 # Main Flask application
+│── requirements.txt        # Dependencies
+│── README.md               # Documentation
+└── venv/                   # (optional) virtual environment
 
- Installation & Setup
-1️ Clone the repository
-
-git clone https://github.com/<your-username>/bruteforce-protection-lab.git
+Installation & Setup
+1️⃣ Clone the Repository
+git clone https://github.com/your-username/bruteforce-protection-lab.git
 cd bruteforce-protection-lab
-
-2️ Create Virtual Environment (optional)
-
+(Optional) Create Virtual Environment
 python3 -m venv venv
 source venv/bin/activate
-
-3️ Install Dependencies
-
+Install Dependencies
 pip install -r requirements.txt
-
-4️ Run the Server
-
+Run the Server
 python app.py
 
-Server starts at:
-
+Your local server starts at:
 http://127.0.0.1:5000
 
-API Endpoints
+PI Endpoints
 POST /login
 
-Login request:
+Example request:
 
 {
-  "username": "admin",
-  "password": "password123"
+  "username": "alice",
+  "password": "mypassword"
 }
+Possible responses:
 
-Responses:
-
-    200 OK → Login successful
-
-    401 Unauthorized → Wrong credentials
-
-    429 Too Many Requests → IP throttled
-
-    423 Locked → Account locked
+| Status                | Meaning                 |
+| --------------------- | ----------------------- |
+| 200 OK                | Login successful        |
+| 401 Unauthorized      | Wrong username/password |
+| 429 Too Many Requests | IP throttled            |
+| 423 Locked            | User account locked     |
 
 GET /status
 
-Shows throttling and lockout information:
+Returns state of:
 
+failed IP attempts
+
+IP backoff timers
+
+user lockout status
+Example:
 {
   "failed_by_ip_sample": {
     "127.0.0.1": {
-      "count": 2,
-      "backoff_until": "2025-11-25 16:32:20"
+      "count": 3,
+      "backoff_until": "2025-11-25 12:30:20"
     }
   },
   "failed_by_user_sample": {}
 }
 
-Configuration
+Configurable Settings
 
-Inside app.py, you can tune parameters:
+You can modify these values in app.py:
+MAX_FAILED_PER_USER = 5
+MAX_FAILED_PER_IP = 50
+BACKOFF_BASE_SECONDS = 2     # exponential backoff
 
-MAX_IP_FAILURES = 5
-IP_BACKOFF_SECONDS = 30
+Examples:
 
-MAX_USER_FAILURES = 3
-USER_LOCK_SECONDS = 60
+Lower MAX_FAILED_PER_USER → stronger account lock
 
-Change these values to adjust the security strength.
- Purpose of the Project
+Lower MAX_FAILED_PER_IP → stronger IP throttling
 
-This project helps you understand and implement brute-force mitigation, similar to:
+Increase BACKOFF_BASE_SECONDS → longer delay each failure
 
-    Web application firewalls
 
-    SIEM brute-force alerts
+Purpose of This Lab
 
-    Authentication hardening practices
+This project helps you understand:
 
-    OWASP rate-limiting guidelines
-Access internal state:
+Defensive design against brute-force attacks
+
+Authentication security mechanisms
+
+How attackers brute-force credentials
+
+Web application rate limiting and lockout policies
+
+Logging patterns useful for SOC & SIEM
+
+Perfect for:
+
+Cybersecurity students
+
+Portfolio projects
+
+Practice labs
+
+Demonstration in interviews
+
+
