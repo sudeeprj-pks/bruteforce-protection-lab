@@ -1,133 +1,112 @@
-🛡️ Brute Force Protection Lab (Flask)
+Brute Force Protection Lab (Flask)
 
-This project demonstrates how to protect a login system from brute-force attacks using IP throttling, user account locking, backoff delays, and detailed logging.
-It is designed for cybersecurity students and developers who want to understand authentication security and defensive programming.
+This project is a simple Flask-based login system that includes basic brute-force protection, such as:
 
-Features
-🔒 1. IP-Based Rate Limiting
+IP rate limiting
 
-Tracks failed login attempts per IP
+User account lockout
 
-Adds exponential backoff delays
+Exponential backoff delay
 
-Returns 429 Too Many Requests when throttled
+Logging failed and successful attempts
 
-👤 2. User Account Locking
+It is designed as a cybersecurity learning project to understand how brute-force attacks work and how to defend against them.
 
-Locks user accounts after too many failed attempts
+📌 Features
 
-Tracks failed logins per username
+✔️ Login endpoint using Flask
 
-Returns 423 Locked when account is locked
-3. Login Attempt Logging
+✔️ Tracks failed login attempts
 
-Logs successes, failures, throttled requests
+✔️ Locks users after too many failed attempts
 
-Useful for security monitoring and SIEM labs
+✔️ Slows down attackers with backoff delay
 
-📊 4. Internal Status Endpoint
+✔️ Shows the current lockout status using /status
 
-/status returns a live snapshot of IP and user lockout state.
-Helpful for testing and observing brute-force mitigation.
-
-Project Structure
+📁 Project Files
 bruteforce_lab/
-│── app.py                 # Main Flask application
-│── requirements.txt        # Dependencies
-│── README.md               # Documentation
-└── venv/                   # (optional) virtual environment
+│── defended_server.py   # Main Flask application
+│── requirements.txt     # Python dependencies
+│── README.md            # Documentation
+└── venv/                # Optional Python virtual environment
 
-Installation & Setup
-1️⃣ Clone the Repository
-git clone https://github.com/your-username/bruteforce-protection-lab.git
-cd bruteforce-protection-lab
-(Optional) Create Virtual Environment
+🛠️ Steps You Followed in This Project (Simple Explanation)
+
+This is what you have done in your Kali Linux machine:
+1️⃣ Created project folder
+
+mkdir -p ~/lab/bruteforce_lab
+cd ~/lab/bruteforce_lab
+
+2️⃣ Created Python virtual environment
+
 python3 -m venv venv
 source venv/bin/activate
-Install Dependencies
-pip install -r requirements.txt
-Run the Server
-python app.py
 
-Your local server starts at:
-http://127.0.0.1:5000
+3️⃣ Installed Flask
 
-PI Endpoints
+pip install flask
+
+4️⃣ Created defended_server.py
+
+This file contains:
+
+    Login API
+
+    Brute-force protection logic
+
+    User lockout rules
+
+    IP throttling rules
+
+5️⃣ Ran the server
+
+python defended_server.py
+
+Server runs on:
+
+👉 http://127.0.0.1:5000/login
+
+👉 http://127.0.0.1:5000/status
+6️⃣ Tested login using curl
+
+Successful login:
+
+curl -X POST -H "Content-Type: application/json" \
+-d '{"username":"alice","password":"correcthorsebatterystaple"}' \
+http://127.0.0.1:5000/login
+
+Failed login:
+
+curl -X POST -H "Content-Type: application/json" \
+-d '{"username":"alice","password":"wrong"}' \
+http://127.0.0.1:5000/login
+
+7️⃣ Checked status
+
+http://127.0.0.1:5000/status
+
+Shows lockouts and IP failures.
+▶️ How to Run the Project Again
+
+If you restart or reopen the PC:
+
+cd ~/lab/bruteforce_lab
+source venv/bin/activate
+python defended_server.py
+API Endpoints
 POST /login
 
-Example request:
-
-{
-  "username": "alice",
-  "password": "mypassword"
-}
-Possible responses:
-
-| Status                | Meaning                 |
-| --------------------- | ----------------------- |
-| 200 OK                | Login successful        |
-| 401 Unauthorized      | Wrong username/password |
-| 429 Too Many Requests | IP throttled            |
-| 423 Locked            | User account locked     |
+Used to check login.
 
 GET /status
 
-Returns state of:
+Shows:
 
-failed IP attempts
+Failed attempts per IP
 
-IP backoff timers
+User lockouts
 
-user lockout status
-Example:
-{
-  "failed_by_ip_sample": {
-    "127.0.0.1": {
-      "count": 3,
-      "backoff_until": "2025-11-25 12:30:20"
-    }
-  },
-  "failed_by_user_sample": {}
-}
-
-Configurable Settings
-
-You can modify these values in app.py:
-MAX_FAILED_PER_USER = 5
-MAX_FAILED_PER_IP = 50
-BACKOFF_BASE_SECONDS = 2     # exponential backoff
-
-Examples:
-
-Lower MAX_FAILED_PER_USER → stronger account lock
-
-Lower MAX_FAILED_PER_IP → stronger IP throttling
-
-Increase BACKOFF_BASE_SECONDS → longer delay each failure
-
-
-Purpose of This Lab
-
-This project helps you understand:
-
-Defensive design against brute-force attacks
-
-Authentication security mechanisms
-
-How attackers brute-force credentials
-
-Web application rate limiting and lockout policies
-
-Logging patterns useful for SOC & SIEM
-
-Perfect for:
-
-Cybersecurity students
-
-Portfolio projects
-
-Practice labs
-
-Demonstration in interviews
-
+Backoff timers
 
